@@ -1,7 +1,7 @@
-import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ClientsModule } from './clients/clients.module';
+import { ConfigModule } from '@nestjs/config'; 
+import { UsuariosModule } from './usuarios/usuarios.module';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { ClientsModule } from './clients/clients.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    ClientsModule,
+    UsuariosModule,
   ],
   controllers: [],
   providers: [],
