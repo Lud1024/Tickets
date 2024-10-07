@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config'; 
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { DepartamentosModule } from './departamentos/departamentos.module'; 
+import { CategoriaTicketModule } from './categoriasTickets/categoria-ticket.module';
+
 
 @Module({
   imports: [
@@ -17,6 +20,8 @@ import { UsuariosModule } from './usuarios/usuarios.module';
       synchronize: true,
     }),
     UsuariosModule,
+    DepartamentosModule,
+    CategoriaTicketModule,
   ],
   controllers: [],
   providers: [],
