@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { DepartamentosModule } from './departamentos/departamentos.module'; 
 import { CategoriaTicketModule } from './categoriasTickets/categoria-ticket.module';
+import { TicketModule } from './tickets/ticket.module';
 
 
 @Module({
@@ -22,6 +23,7 @@ import { CategoriaTicketModule } from './categoriasTickets/categoria-ticket.modu
     UsuariosModule,
     DepartamentosModule,
     CategoriaTicketModule,
+    TicketModule,
   ],
   controllers: [],
   providers: [],
