@@ -5,6 +5,8 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { DepartamentosModule } from './departamentos/departamentos.module'; 
 import { CategoriaTicketModule } from './categoriasTickets/categoria-ticket.module';
 import { TicketModule } from './tickets/ticket.module';
+import { AsignacionTicketModule } from './asignacionTickets/asignacion-ticket.module';
+import { ComentarioModule } from './comentarios/comentario.module';
 
 
 @Module({
@@ -24,6 +26,8 @@ import { TicketModule } from './tickets/ticket.module';
     DepartamentosModule,
     CategoriaTicketModule,
     TicketModule,
+    AsignacionTicketModule,
+    ComentarioModule,
   ],
   controllers: [],
   providers: [],
