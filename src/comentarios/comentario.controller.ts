@@ -7,7 +7,7 @@ import { ActualizarComentarioDto } from './dto/actualizar-comentario.dto';
 
 @Controller('comentarios')
 export class ComentarioController {
-  constructor(private readonly comentarioService: ComentarioService) {}
+  constructor(private readonly comentarioService: ComentarioService) { }
 
   @Get()
   findAll() {
@@ -30,7 +30,8 @@ export class ComentarioController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.comentarioService.remove(id);
+  async remove(@Param('id') id: number) {
+    await this.comentarioService.remove(id);
+    return { message: `Registro Eliminado Exitosamente` };
   }
 }

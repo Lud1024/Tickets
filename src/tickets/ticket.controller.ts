@@ -31,7 +31,8 @@ export class TicketController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
-    return this.ticketService.remove(id);
+  async remove(@Param('id') id: number): Promise<{ message: string }> {
+    await this.ticketService.remove(id);
+    return { message: `Registro eliminado exitosamente` };
   }
 }

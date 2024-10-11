@@ -36,8 +36,9 @@ export class UsuariosController {
 
   // Eliminar un usuario por ID
   @Delete(':id')
-  eliminar(@Param('id') id: string) {
-    return this.usuariosService.eliminar(id);
+  async eliminar(@Param('id') id: string) {
+    await this.usuariosService.eliminar(id);
+  return { message: `Registro eliminado exitosamente` };
   }
 
   // Nueva ruta para la autenticación de usuarios

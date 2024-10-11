@@ -31,7 +31,8 @@ export class DepartamentosController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
-    return this.departamentosService.remove(id);
+  async remove(@Param('id') id: number): Promise<{ message: string }> {
+    await this.departamentosService.remove(id);
+    return { message: `Registro eliminado exitosamente` };
   }
 }

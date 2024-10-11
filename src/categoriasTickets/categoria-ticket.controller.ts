@@ -31,7 +31,8 @@ export class CategoriaTicketController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
-    return this.categoriaTicketService.remove(id);
+  async remove(@Param('id') id: number): Promise<{ message: string }> {
+    await this.categoriaTicketService.remove(id);
+    return { message: `Registro Eliminado Exitosamente` };
   }
 }

@@ -7,7 +7,7 @@ import { ActualizarAsignacionTicketDto } from './dto/actualizar-asignacion-ticke
 
 @Controller('asignaciontickets')
 export class AsignacionTicketController {
-  constructor(private readonly asignacionService: AsignacionTicketService) {}
+  constructor(private readonly asignacionService: AsignacionTicketService) { }
 
   @Get()
   findAll() {
@@ -30,7 +30,8 @@ export class AsignacionTicketController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.asignacionService.remove(id);
+  async remove(@Param('id') id: number) {
+    await this.asignacionService.remove(id);
+    return { message: `Registro Eliminado Exitosamente` };
   }
 }
