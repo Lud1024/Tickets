@@ -6,12 +6,14 @@ import { Repository } from 'typeorm';
 import { Ticket } from './entities/ticket.entity';
 import { CrearTicketDto } from './dto/crear-ticket.dto';
 import { ActualizarTicketDto } from './dto/actualizar-ticket.dto';
+import { HistorialCambioService } from '../historialCambios/historial-cambio.service';  // Importamos el servicio del historial de cambios
 
 @Injectable()
 export class TicketService {
   constructor(
     @InjectRepository(Ticket)
     private readonly ticketRepository: Repository<Ticket>,
+    private readonly historialCambioService: HistorialCambioService,  // Inyectamos el servicio del historial de cambios
   ) {}
 
   findAll(): Promise<Ticket[]> {
@@ -26,24 +28,34 @@ export class TicketService {
   }
 
   async create(crearTicketDto: CrearTicketDto): Promise<Ticket> {
-    // Crear manualmente el objeto Ticket a partir del DTO
-    const ticket = new Ticket();
-
-    // Asignar propiedades del DTO al objeto Ticket
-    ticket.titulo = crearTicketDto.titulo;
-    ticket.descripcion = crearTicketDto.descripcion;
-    ticket.prioridad = crearTicketDto.prioridad;
-    ticket.estado = crearTicketDto.estado;
-    ticket.id_usuario_creador = crearTicketDto.id_usuario_creador;
-    ticket.id_tecnico_asignado = crearTicketDto.id_tecnico_asignado;
-    ticket.id_departamento = crearTicketDto.id_departamento;
-    ticket.id_categoria_ticket = crearTicketDto.id_categoria_ticket;
-
-    // Guardar el nuevo ticket en el repositorio
-    return await this.ticketRepository.save(ticket);
+    const ticket = this.ticketRepository.create(crearTicketDto);
+    return this.ticketRepository.save(ticket);
   }
 
-  async update(id: number, actualizarTicketDto: ActualizarTicketDto): Promise<Ticket> {
+  async update(id: number, actualizarTicketDto: ActualizarTicketDto, usuarioId: string): Promise<Ticket> {
+    const ticket = await this.ticketRepository.findOneBy({ id_ticket: id });
+
+    // Comprobar qué campos han cambiado y registrar los cambios en el historial
+    if (ticket.estado !== actualizarTicketDto.estado) {
+      await this.historialCambioService.create({
+        id_ticket: ticket.id_ticket,
+        id_usuario: usuarioId,
+        campo_modificado: 'estado',
+        valor_anterior: ticket.estado,
+        valor_nuevo: actualizarTicketDto.estado,
+      });
+    }
+
+    if (ticket.prioridad !== actualizarTicketDto.prioridad) {
+      await this.historialCambioService.create({
+        id_ticket: ticket.id_ticket,
+        id_usuario: usuarioId,
+        campo_modificado: 'prioridad',
+        valor_anterior: ticket.prioridad,
+        valor_nuevo: actualizarTicketDto.prioridad,
+      });
+    }
+
     await this.ticketRepository.update(id, actualizarTicketDto);
     return this.ticketRepository.findOneBy({ id_ticket: id });
   }

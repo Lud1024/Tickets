@@ -6,12 +6,14 @@ import { Repository } from 'typeorm';
 import { AsignacionTicket } from './entities/asignacion-ticket.entity';
 import { CrearAsignacionTicketDto } from './dto/crear-asignacion-ticket.dto';
 import { ActualizarAsignacionTicketDto } from './dto/actualizar-asignacion-ticket.dto';
+import { HistorialCambioService } from '../historialCambios/historial-cambio.service';  // Importamos el servicio del historial de cambios
 
 @Injectable()
 export class AsignacionTicketService {
   constructor(
     @InjectRepository(AsignacionTicket)
     private readonly asignacionRepository: Repository<AsignacionTicket>,
+    private readonly historialCambioService: HistorialCambioService,  // Inyectamos el servicio del historial de cambios
   ) {}
 
   findAll(): Promise<AsignacionTicket[]> {
@@ -25,12 +27,24 @@ export class AsignacionTicketService {
     });
   }
 
-  create(crearAsignacionDto: CrearAsignacionTicketDto): Promise<AsignacionTicket> {
+  async create(crearAsignacionDto: CrearAsignacionTicketDto): Promise<AsignacionTicket> {
     const asignacion = this.asignacionRepository.create(crearAsignacionDto);
     return this.asignacionRepository.save(asignacion);
   }
 
-  async update(id: number, actualizarAsignacionDto: ActualizarAsignacionTicketDto): Promise<AsignacionTicket> {
+  async update(id: number, actualizarAsignacionDto: ActualizarAsignacionTicketDto, usuarioId: string): Promise<AsignacionTicket> {
+    const asignacion = await this.asignacionRepository.findOneBy({ id_asignacion: id });
+
+    if (asignacion.id_tecnico !== actualizarAsignacionDto.id_tecnico) {
+      await this.historialCambioService.create({
+        id_ticket: asignacion.id_ticket,
+        id_usuario: usuarioId,
+        campo_modificado: 'id_tecnico',
+        valor_anterior: asignacion.id_tecnico,
+        valor_nuevo: actualizarAsignacionDto.id_tecnico,
+      });
+    }
+
     await this.asignacionRepository.update(id, actualizarAsignacionDto);
     return this.asignacionRepository.findOneBy({ id_asignacion: id });
   }

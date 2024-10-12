@@ -6,12 +6,14 @@ import { Repository } from 'typeorm';
 import { Comentario } from './entities/comentario.entity';
 import { CrearComentarioDto } from './dto/crear-comentario.dto';
 import { ActualizarComentarioDto } from './dto/actualizar-comentario.dto';
+import { HistorialCambioService } from '../historialCambios/historial-cambio.service';  // Importamos el servicio del historial de cambios
 
 @Injectable()
 export class ComentarioService {
   constructor(
     @InjectRepository(Comentario)
     private readonly comentarioRepository: Repository<Comentario>,
+    private readonly historialCambioService: HistorialCambioService,  // Inyectamos el servicio del historial de cambios
   ) {}
 
   findAll(): Promise<Comentario[]> {
@@ -25,12 +27,24 @@ export class ComentarioService {
     });
   }
 
-  create(crearComentarioDto: CrearComentarioDto): Promise<Comentario> {
+  async create(crearComentarioDto: CrearComentarioDto): Promise<Comentario> {
     const comentario = this.comentarioRepository.create(crearComentarioDto);
     return this.comentarioRepository.save(comentario);
   }
 
-  async update(id: number, actualizarComentarioDto: ActualizarComentarioDto): Promise<Comentario> {
+  async update(id: number, actualizarComentarioDto: ActualizarComentarioDto, usuarioId: string): Promise<Comentario> {
+    const comentario = await this.comentarioRepository.findOneBy({ id_comentario: id });
+
+    if (comentario.contenido !== actualizarComentarioDto.contenido) {
+      await this.historialCambioService.create({
+        id_ticket: comentario.id_ticket,
+        id_usuario: usuarioId,
+        campo_modificado: 'contenido',
+        valor_anterior: comentario.contenido,
+        valor_nuevo: actualizarComentarioDto.contenido,
+      });
+    }
+
     await this.comentarioRepository.update(id, actualizarComentarioDto);
     return this.comentarioRepository.findOneBy({ id_comentario: id });
   }

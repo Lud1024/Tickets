@@ -7,6 +7,7 @@ import { CategoriaTicketModule } from './categoriasTickets/categoria-ticket.modu
 import { TicketModule } from './tickets/ticket.module';
 import { AsignacionTicketModule } from './asignacionTickets/asignacion-ticket.module';
 import { ComentarioModule } from './comentarios/comentario.module';
+import { HistorialCambioModule } from './historialCambios/historial-cambio.module';
 
 
 @Module({
@@ -28,6 +29,7 @@ import { ComentarioModule } from './comentarios/comentario.module';
     TicketModule,
     AsignacionTicketModule,
     ComentarioModule,
+    HistorialCambioModule,
   ],
   controllers: [],
   providers: [],
