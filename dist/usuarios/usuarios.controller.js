@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const usuarios_service_1 = require("./usuarios.service");
 const crear_usuario_dto_1 = require("./dto/crear-usuario.dto");
 const actualizar_usuario_dto_1 = require("./dto/actualizar-usuario.dto");
+const recovery_dto_1 = require("./dto/recovery.dto");
 const login_dto_1 = require("./dto/login.dto");
 let UsuariosController = class UsuariosController {
     constructor(usuariosService) {
@@ -46,6 +47,16 @@ let UsuariosController = class UsuariosController {
         }
         else {
             throw new common_1.NotFoundException('Credenciales incorrectas');
+        }
+    }
+    async recovery(recoveryUsuarioDto) {
+        const { nombre_usuario, palabra_secreta } = recoveryUsuarioDto;
+        const { esValida, id_usuario } = await this.usuariosService.verificarPalabraSecreta(nombre_usuario, palabra_secreta);
+        if (esValida) {
+            return { success: true, message: 'Palabra secreta correcta, puedes continuar con la recuperación.', uuid: id_usuario };
+        }
+        else {
+            throw new common_1.NotFoundException('La palabra secreta es incorrecta o el usuario no existe.');
         }
     }
 };
@@ -92,6 +103,13 @@ __decorate([
     __metadata("design:paramtypes", [login_dto_1.LoginUsuarioDto]),
     __metadata("design:returntype", Promise)
 ], UsuariosController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('recovery'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [recovery_dto_1.RecoveryUsuarioDto]),
+    __metadata("design:returntype", Promise)
+], UsuariosController.prototype, "recovery", null);
 exports.UsuariosController = UsuariosController = __decorate([
     (0, common_1.Controller)('usuarios'),
     __metadata("design:paramtypes", [usuarios_service_1.UsuariosService])

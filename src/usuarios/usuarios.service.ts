@@ -31,6 +31,23 @@ export class UsuariosService {
 
   // Actualizar un usuario existente
   async actualizar(id: string, actualizarUsuarioDto: ActualizarUsuarioDto) {
+    const usuario = await this.usuarioRepository.findOneBy({ id_usuario: id });
+
+    if (!usuario) {
+      throw new NotFoundException(`El usuario con ID ${id} no fue encontrado`);
+    }
+
+    // Encriptar palabra secreta y contraseña si se proporcionan en la actualización
+    if (actualizarUsuarioDto.palabra_secreta) {
+      const salt = await bcrypt.genSalt();
+      actualizarUsuarioDto.palabra_secreta = await bcrypt.hash(actualizarUsuarioDto.palabra_secreta, salt);
+    }
+
+    if (actualizarUsuarioDto.contraseña) {
+      const salt = await bcrypt.genSalt();
+      actualizarUsuarioDto.contraseña = await bcrypt.hash(actualizarUsuarioDto.contraseña, salt);
+    }
+
     await this.usuarioRepository.update(id, actualizarUsuarioDto);
     return this.usuarioRepository.findOneBy({ id_usuario: id });
   }
@@ -46,7 +63,6 @@ export class UsuariosService {
     const usuario = await this.usuarioRepository.findOneBy({ nombre_usuario });
 
     if (!usuario) {
-      // Si no existe el usuario, devolver false
       throw new NotFoundException(`El usuario con nombre ${nombre_usuario} no existe`);
     }
 
@@ -54,4 +70,23 @@ export class UsuariosService {
     const esMatch = await bcrypt.compare(contraseña, usuario.contraseña);
     return { success: esMatch };
   }
+
+  // Nueva función para verificar la palabra secreta
+    async verificarPalabraSecreta(nombre_usuario: string, palabra_secreta: string): Promise<{ esValida: boolean, id_usuario?: string }> {
+      const usuario = await this.usuarioRepository.findOneBy({ nombre_usuario });
+  
+      if (!usuario) {
+        throw new NotFoundException(`El usuario con nombre ${nombre_usuario} no existe.`);
+      }
+  
+      // Comparar la palabra secreta encriptada con la proporcionada
+      const esValida = await bcrypt.compare(palabra_secreta, usuario.palabra_secreta);
+  
+      // Si es válida, devolver el UUID del usuario
+      if (esValida) {
+        return { esValida: true, id_usuario: usuario.id_usuario };
+      }
+  
+      return { esValida: false };
+    }
 }

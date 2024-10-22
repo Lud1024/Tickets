@@ -2,8 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } 
 import { UsuariosService } from './usuarios.service';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto';
 import { ActualizarUsuarioDto } from './dto/actualizar-usuario.dto';
-
-// Importar el DTO para la autenticación
+import { RecoveryUsuarioDto } from './dto/recovery.dto'; // Asegúrate de importar esto
 import { LoginUsuarioDto } from './dto/login.dto';
 
 @Controller('usuarios')
@@ -51,6 +50,20 @@ export class UsuariosController {
       return { success: true, message: 'Autenticación exitosa' };
     } else {
       throw new NotFoundException('Credenciales incorrectas');
+    }
+  }
+
+  @Post('recovery')
+  async recovery(@Body() recoveryUsuarioDto: RecoveryUsuarioDto) {
+    const { nombre_usuario, palabra_secreta } = recoveryUsuarioDto;
+
+    // Verificar si el usuario existe y la palabra secreta coincide
+    const { esValida, id_usuario } = await this.usuariosService.verificarPalabraSecreta(nombre_usuario, palabra_secreta);
+
+    if (esValida) {
+      return { success: true, message: 'Palabra secreta correcta, puedes continuar con la recuperación.', uuid: id_usuario };
+    } else {
+      throw new NotFoundException('La palabra secreta es incorrecta o el usuario no existe.');
     }
   }
 }

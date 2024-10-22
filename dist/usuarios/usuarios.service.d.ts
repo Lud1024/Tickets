@@ -13,4 +13,8 @@ export declare class UsuariosService {
     autenticar(nombre_usuario: string, contraseña: string): Promise<{
         success: boolean;
     }>;
+    verificarPalabraSecreta(nombre_usuario: string, palabra_secreta: string): Promise<{
+        esValida: boolean;
+        id_usuario?: string;
+    }>;
 }

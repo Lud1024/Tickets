@@ -1,6 +1,7 @@
 import { UsuariosService } from './usuarios.service';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto';
 import { ActualizarUsuarioDto } from './dto/actualizar-usuario.dto';
+import { RecoveryUsuarioDto } from './dto/recovery.dto';
 import { LoginUsuarioDto } from './dto/login.dto';
 export declare class UsuariosController {
     private readonly usuariosService;
@@ -15,5 +16,10 @@ export declare class UsuariosController {
     login(loginUsuarioDto: LoginUsuarioDto): Promise<{
         success: boolean;
         message: string;
+    }>;
+    recovery(recoveryUsuarioDto: RecoveryUsuarioDto): Promise<{
+        success: boolean;
+        message: string;
+        uuid: string;
     }>;
 }

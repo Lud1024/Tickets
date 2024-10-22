@@ -33,6 +33,18 @@ let UsuariosService = class UsuariosService {
         return this.usuarioRepository.findOneBy({ id_usuario: id });
     }
     async actualizar(id, actualizarUsuarioDto) {
+        const usuario = await this.usuarioRepository.findOneBy({ id_usuario: id });
+        if (!usuario) {
+            throw new common_1.NotFoundException(`El usuario con ID ${id} no fue encontrado`);
+        }
+        if (actualizarUsuarioDto.palabra_secreta) {
+            const salt = await bcrypt.genSalt();
+            actualizarUsuarioDto.palabra_secreta = await bcrypt.hash(actualizarUsuarioDto.palabra_secreta, salt);
+        }
+        if (actualizarUsuarioDto.contraseña) {
+            const salt = await bcrypt.genSalt();
+            actualizarUsuarioDto.contraseña = await bcrypt.hash(actualizarUsuarioDto.contraseña, salt);
+        }
         await this.usuarioRepository.update(id, actualizarUsuarioDto);
         return this.usuarioRepository.findOneBy({ id_usuario: id });
     }
@@ -46,6 +58,17 @@ let UsuariosService = class UsuariosService {
         }
         const esMatch = await bcrypt.compare(contraseña, usuario.contraseña);
         return { success: esMatch };
+    }
+    async verificarPalabraSecreta(nombre_usuario, palabra_secreta) {
+        const usuario = await this.usuarioRepository.findOneBy({ nombre_usuario });
+        if (!usuario) {
+            throw new common_1.NotFoundException(`El usuario con nombre ${nombre_usuario} no existe.`);
+        }
+        const esValida = await bcrypt.compare(palabra_secreta, usuario.palabra_secreta);
+        if (esValida) {
+            return { esValida: true, id_usuario: usuario.id_usuario };
+        }
+        return { esValida: false };
     }
 };
 exports.UsuariosService = UsuariosService;
