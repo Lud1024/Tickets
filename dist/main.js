@@ -6,12 +6,14 @@ const common_1 = require("@nestjs/common");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors();
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix('tickets');
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
     }));
-    await app.listen(3000);
+    const port = process.env.PORT || 3000;
+    await app.listen(port);
+    console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
